@@ -472,6 +472,7 @@ CConfigManager::CConfigManager() {
     m_pConfig->addConfigValue("debug:watchdog_timeout", Hyprlang::INT{5});
     m_pConfig->addConfigValue("debug:disable_scale_checks", Hyprlang::INT{0});
     m_pConfig->addConfigValue("debug:colored_stdout_logs", Hyprlang::INT{1});
+    m_pConfig->addConfigValue("debug:full_cm_proto", Hyprlang::INT{0});
 
     m_pConfig->addConfigValue("decoration:rounding", Hyprlang::INT{0});
     m_pConfig->addConfigValue("decoration:rounding_power", {2.F});
