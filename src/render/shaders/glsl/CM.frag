@@ -1,27 +1,30 @@
 #version 300 es
 //#extension GL_OES_EGL_image_external : require
 #extension GL_ARB_shading_language_include : enable
+#extension GL_ARB_explicit_uniform_location : require
+
+#include "locations.h"
 
 precision highp float;
 in vec2 v_texcoord;
 uniform sampler2D tex;
 //uniform samplerExternalOES texture0;
 
-uniform int texType; // eTextureType: 0 - rgba, 1 - rgbx, 2 - ext
+layout(location = SU_LOC_TEXTYPE) uniform int texType; // eTextureType: 0 - rgba, 1 - rgbx, 2 - ext
 // uniform int skipCM;
-uniform int sourceTF; // eTransferFunction
-uniform int targetTF; // eTransferFunction
-uniform mat4x2 sourcePrimaries;
-uniform mat4x2 targetPrimaries;
+layout(location = SU_LOC_SOURCETF) uniform int sourceTF; // eTransferFunction
+layout(location = SU_LOC_TARGETTF) uniform int targetTF; // eTransferFunction
+layout(location = SU_LOC_SOURCEPRIMARIES) uniform mat4x2 sourcePrimaries;
+layout(location = SU_LOC_TARGETPRIMARIES) uniform mat4x2 targetPrimaries;
 
-uniform float alpha;
+layout(location = SU_LOC_ALPHA) uniform float alpha;
 
-uniform int discardOpaque;
-uniform int discardAlpha;
-uniform float discardAlphaValue;
+layout(location = SU_LOC_DISCARDOPAQUE) uniform int discardOpaque;
+layout(location = SU_LOC_DISCARDALPHA) uniform int discardAlpha;
+layout(location = SU_LOC_DISCARDALPHAVALUE) uniform float discardAlphaValue;
 
-uniform int applyTint;
-uniform vec3 tint;
+layout(location = SU_LOC_APPLYTINT) uniform int applyTint;
+layout(location = SU_LOC_TINT) uniform vec3 tint;
 
 #include "rounding.glsl"
 #include "CM.glsl"

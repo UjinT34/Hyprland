@@ -1,11 +1,14 @@
+//#extension GL_ARB_shading_language_include : enable
+#include "locations.h"
+
 // smoothing constant for the edge: more = blurrier, but smoother
 #define M_PI 3.1415926535897932384626433832795
 #define SMOOTHING_CONSTANT (M_PI / 5.34665792551)
 
-uniform float radius;
-uniform float roundingPower;
-uniform vec2 topLeft;
-uniform vec2 fullSize;
+layout(location = SU_LOC_RADIUS) uniform float radius;
+layout(location = SU_LOC_ROUNDINGPOWER) uniform float roundingPower;
+layout(location = SU_LOC_TOPLEFT) uniform vec2 topLeft;
+layout(location = SU_LOC_FULLSIZE) uniform vec2 fullSize;
 
 vec4 rounding(vec4 color) {
     vec2 pixCoord = vec2(gl_FragCoord);

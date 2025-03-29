@@ -598,6 +598,7 @@ void CHyprOpenGLImpl::logShaderError(const GLuint& shader, bool program, bool si
 }
 
 GLuint CHyprOpenGLImpl::createProgram(const std::string& vert, const std::string& frag, bool dynamic, bool silent) {
+    Debug::log(ERR, frag);
     auto vertCompiled = compileShader(GL_VERTEX_SHADER, vert, dynamic, silent);
     if (dynamic) {
         if (vertCompiled == 0)
@@ -886,10 +887,6 @@ static std::string loadShader(const std::string& filename) {
     throw std::runtime_error(std::format("Couldn't load shader {}", filename));
 }
 
-static void loadShaderInclude(const std::string& filename, std::map<std::string, std::string>& includes) {
-    includes.insert({filename, loadShader(filename)});
-}
-
 static void processShaderIncludes(std::string& source, const std::map<std::string, std::string>& includes) {
     for (auto it = includes.begin(); it != includes.end(); ++it) {
         Hyprutils::String::replaceInString(source, "#include \"" + it->first + "\"", it->second);
@@ -900,6 +897,10 @@ static std::string processShader(const std::string& filename, const std::map<std
     auto source = loadShader(filename);
     processShaderIncludes(source, includes);
     return source;
+}
+
+static void loadShaderInclude(const std::string& filename, std::map<std::string, std::string>& includes) {
+    includes.insert({filename, processShader(filename, includes)});
 }
 
 // shader has #include "CM.glsl"
@@ -931,6 +932,7 @@ bool CHyprOpenGLImpl::initShaders() {
 
     try {
         std::map<std::string, std::string> includes;
+        loadShaderInclude("locations.h", includes); // .h always first
         loadShaderInclude("rounding.glsl", includes);
         loadShaderInclude("CM.glsl", includes);
 

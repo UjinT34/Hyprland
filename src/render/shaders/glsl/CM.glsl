@@ -1,8 +1,12 @@
-uniform float maxLuminance;
-uniform float dstMaxLuminance;
-uniform float dstRefLuminance;
-uniform float sdrSaturation;
-uniform float sdrBrightnessMultiplier;
+//#extension GL_ARB_shading_language_include : enable
+
+#include "locations.h"
+
+layout(location = SU_LOC_MAXLUMINANCE) uniform float maxLuminance;
+layout(location = SU_LOC_DSTMAXLUMINANCE) uniform float dstMaxLuminance;
+layout(location = SU_LOC_DSTREFLUMINANCE) uniform float dstRefLuminance;
+layout(location = SU_LOC_SDRSATURATION) uniform float sdrSaturation;
+layout(location = SU_LOC_SDRBRIGHTNESS) uniform float sdrBrightnessMultiplier;
 
 //enum eTransferFunction
 #define CM_TRANSFER_FUNCTION_BT1886     1
@@ -256,7 +260,12 @@ const mat3 Bradford = mat3(
     -0.7502, 1.7135, 0.0367,
     0.0389, -0.0685, 1.0296
 );
-const mat3 BradfordInv = inverse(Bradford);
+//const mat3 BradfordInv = inverse(Bradford);
+const mat3 BradfordInv = mat3(
+    0.9869929054667121899, -0.14705425642099010066, 0.15996265166373123948,
+    0.43230526972339451002, 0.51836027153677753834, 0.049291228212855612148,
+    -0.0085286645751773312464, 0.040042821654084864313, 0.96848669578754998478
+);
 
 mat3 adaptWhite(vec2 src, vec2 dst) {
     if (src == dst)
@@ -287,21 +296,37 @@ const mat3 BT2020toLMS = mat3(
     -0.1922, 1.1004, 0.0755,
     0.0070, 0.0749, 0.8434
 );
-const mat3 LMStoBT2020 = inverse(BT2020toLMS);
+//const mat3 LMStoBT2020 = inverse(BT2020toLMS);
+const mat3 LMStoBT2020 = mat3(
+    2.0701800566956135096, -1.3264568761030210255, 0.20661600684785517081,
+    0.36498825003265747974, 0.68046736285223514102, -0.045421753075853231409,
+    -0.049595542238932107896, -0.049421161186757487412, 1.1879959417328034394
+);
 
-const mat3 ICtCpPQ = transpose(mat3(
-    2048.0, 2048.0, 0.0,
-    6610.0, -13613.0, 7003.0,
-    17933.0, -17390.0, -543.0
-) / 4096.0);
+// const mat3 ICtCpPQ = transpose(mat3(
+//     2048.0, 2048.0, 0.0,
+//     6610.0, -13613.0, 7003.0,
+//     17933.0, -17390.0, -543.0
+// ) / 4096.0);
+// const mat3 ICtCpPQ = mat3(
+//     0.5, 1.61376953125, 4.378173828125,
+//     0.5, -3.323486328125, -4.24560546875,
+//     0.0, 1.709716796875, -0.132568359375
+// );
+const mat3 ICtCpPQ = mat3(
+    0.5, 0.5, 0.0,
+    1.61376953125, -3.323486328125, 1.709716796875,
+    4.378173828125, -4.24560546875, -0.132568359375
+);
 const mat3 ICtCpPQInv = inverse(ICtCpPQ);
 
-const mat3 ICtCpHLG = transpose(mat3(
-    2048.0, 2048.0, 0.0,
-    3625.0, -7465.0, 3840.0,
-    9500.0, -9212.0, -288.0
-) / 4096.0);
-const mat3 ICtCpHLGInv = inverse(ICtCpHLG);
+// unused for now
+// const mat3 ICtCpHLG = transpose(mat3(
+//     2048.0, 2048.0, 0.0,
+//     3625.0, -7465.0, 3840.0,
+//     9500.0, -9212.0, -288.0
+// ) / 4096.0);
+// const mat3 ICtCpHLGInv = inverse(ICtCpHLG);
 
 vec4 tonemap(vec4 color, mat3 dstXYZ) {
     if (maxLuminance < dstMaxLuminance * 1.01)
